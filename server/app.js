@@ -19,10 +19,11 @@ app.all('*',function(req,res,next) {
     next();
     });
 const user = require('./routers/user');
-
+const serverChat = require('./routers/WS')
+serverChat.listen(3004,()=>{console.log('聊天服务》》》')})
 app.use('/user',user)
  
-//app.get('/test',(req,res) => res.json({code:090}))
+ 
 
     // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -51,4 +52,4 @@ const options = {
 http.createServer(app).listen(3003,console.log('正在监听3003'))
 var server = https.createServer(app,options);
 server.listen(3002,console.log('正在监听3002'));
-//module.exports = app;
+module.exports = app;

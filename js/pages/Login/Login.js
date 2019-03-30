@@ -1,9 +1,15 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View ,Image, AsyncStorage,Alert } from 'react-native';
+import {Platform, 
+        StyleSheet, 
+        Text, 
+        View ,
+        Image, 
+        AsyncStorage,
+        Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import { Input, Divider, Button } from 'react-native-elements';
 import api from '../../axios/api';
-
+import {login_style} from './login_style'
 
 class Login extends Component{
     constructor(props){
@@ -16,11 +22,7 @@ class Login extends Component{
         this.usernameInput = React.createRef()
         this.passwordInput = React.createRef()
     }
-    static navigationOptions = {
-        title: '登录',
-    };
-     
-
+    
     
     onChangeState = (inputKey, value)=> {
         this.setState({[inputKey]:value})
@@ -33,11 +35,11 @@ class Login extends Component{
             await AsyncStorage.setItem('userID',user._id)
             await AsyncStorage.setItem('sex',user.sex)
             await AsyncStorage.setItem('job',user.job)
-            await AsyncStorage.setItem('avatar',user.avatarURL)
-    
-            const avatar = await AsyncStorage.getItem('avatar');
-            console.log(avatar)
-            this.props.navigation.goBack()
+            await AsyncStorage.setItem('avatarBase64',user.avatarBase64)
+           // await AsyncStorage.setItem('mySendedMsgs',user.mySendedMsgs)
+            //await AsyncStorage.setItem('messageNotRead',user.messageNotRead)
+          
+            this.props.navigation.navigate('hadLogined')
             // asset/user_avatar/1553688802632IMG_0002.JP
         }catch(err){
             console.log(err)
@@ -57,8 +59,7 @@ class Login extends Component{
             Alert.alert('密码不正确',
                         '',
                         [{text:'ok',onPress:()=>{
-                            this.passwordInput.current.value = null
-                            this.usernameInput.current.value = null
+                             
                         }}])
         }else if(res.code === 2){
             Alert.alert(' 用户名不存在',
@@ -71,7 +72,10 @@ class Login extends Component{
     }
     render(){
         return(
-            <View>
+            <View style = {login_style.loginBody}>
+                <View style = {{marginBottom:30}}>
+                    <Text style = {{color:'rgb(28,115,212)',fontSize: 40,textAlign:'center'}}>简易QQ</Text>
+                </View>
                 <Input  placeholder = '用户名' 
                         leftIcon = {()=><Icon name='user' type = 'entype' size={24}></Icon>}
                         onChangeText = {(text) => this.onChangeState('username',text)}
@@ -81,7 +85,13 @@ class Login extends Component{
                         leftIcon = {()=><Icon name='key' type = 'entype' size={24}></Icon>}
                         onChangeText = {(text) => this.onChangeState('password',text)}
                         />
-                <Button title = '登录' onPress = {() => this.login()}/>
+                <Button title = '登录' 
+                        onPress = {() => this.login()}
+                        style = {login_style.button}
+                        />
+                <Button title = '注册' 
+                        style = {{marginTop:7}}
+                        onPress = {() => this.props.navigation.navigate('Register')}/>
             </View>
         )
     }

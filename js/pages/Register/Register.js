@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View,Image,Alert,AsyncStorage} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
-import { Input, Divider, Button } from 'react-native-elements';
+import { Input, Divider, Button,Header } from 'react-native-elements';
 import api from '../../axios/api'
 var ImagePicker = require('react-native-image-picker');
 import {Register_style} from './style'
@@ -22,9 +22,7 @@ class Register extends Component{
         }
         this.password_confirm_Input = React.createRef()
     }
-    static navigationOptions = {
-        title: '注册',
-    };
+    
     onChangeState = (inputKey, value)=> {
         this.setState({[inputKey]:value})
     }
@@ -36,7 +34,7 @@ class Register extends Component{
             console.log('密码不一致')
             Alert.alert('密码不一致',
                         '请重新输入密码',
-                        [{text:'ok',onPress:()=>this.password_confirm_Input.current.value = null}])
+                        [{text:'ok',onPress:()=> console.log(9)}])
             return false
             
         }
@@ -50,10 +48,8 @@ class Register extends Component{
             await AsyncStorage.setItem('sex',user.sex)
             await AsyncStorage.setItem('job',user.job)
             await AsyncStorage.setItem('avatarBase64',user.avatarBase64)
-    
-            const avatar = await AsyncStorage.getItem('avatar');
-            console.log(avatar)
-            // asset/user_avatar/1553688802632IMG_0002.JP
+           
+           
         }catch(err){
             console.log(err)
         }
@@ -97,6 +93,8 @@ class Register extends Component{
                      '',
                     [{text:'ok',onPress:()=>this.password_confirm_Input.current.value = null}])
                     this.props.navigation.navigate('已经登录')
+
+                    this.props.navigation.navigate('hadLogined')
                 //}
                 
             }
@@ -123,8 +121,15 @@ class Register extends Component{
     }
     render(){
         return(
-            <View>
-                <View>
+            <View >
+                <Header
+                        backgroundColor = 'white'
+                        centerComponent={{ text: this.state.friendName, style: { color: '#333' } }}
+                        leftComponent={<Icon name = 'chevron-thin-left' size = {22} onPress={()=>this.props.navigation.goBack()} />}
+                         
+                    />
+
+                <View style = {{marginTop:100}}>
                  
                  <Input placeholder = '用户名' 
                         leftIcon = {()=><Icon name='user' type = 'entype' size={24}></Icon>}
