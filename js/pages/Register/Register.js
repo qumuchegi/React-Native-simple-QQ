@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View,Image,Alert,AsyncStorage} from 'react-native';
+import {Platform, StyleSheet, Text, View,Image,Alert,AsyncStorage,Picker} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import { Input, Divider, Button,Header } from 'react-native-elements';
 import api from '../../axios/api'
@@ -22,7 +22,9 @@ class Register extends Component{
         }
         this.password_confirm_Input = React.createRef()
     }
-    
+    static navigationOptions = {
+        title: '注册',
+    };
     onChangeState = (inputKey, value)=> {
         this.setState({[inputKey]:value})
     }
@@ -129,7 +131,7 @@ class Register extends Component{
                          
                     />
 
-                <View style = {{marginTop:100}}>
+                <View style = {{marginTop:50}}>
                  
                  <Input placeholder = '用户名' 
                         leftIcon = {()=><Icon name='user' type = 'entype' size={24}></Icon>}
@@ -145,29 +147,54 @@ class Register extends Component{
                         leftIcon = {()=><Icon name='key' type = 'entype' size={24}></Icon>}
                         onChangeText = {(text) => this.onChangeState('password_confirm',text)}
                         />
+
                  <Input placeholder = '工作' 
                         leftIcon = {()=><Icon name='briefcase' type = 'entype' size={24}></Icon>}
-                        onChangeText = {(text) => this.onChangeState('sex',text)}
-                        />
-                 <Input placeholder = '性别' 
-                        leftIcon = {()=><Icon name='users' type = 'entype' size={24}></Icon>}
                         onChangeText = {(text) => this.onChangeState('job',text)}
                         />
-                <Button title = '上传头像' 
-                        onPress = {()=> this.showImagePicker()}/>
+                 <View style = {{
+                     justifyContent:'space-between',
+                     flexDirection:'row',
+                     padding:25,
+                     paddingBottom:40,
+                     height:100
+                  
+                 }}>
+                    <View style={{flexDirection:'row'}}>
+                        <Icon name='upload' size = {30} onPress = {()=> this.showImagePicker()}/>
+                        <Text style ={{marginTop:10}}>上传头像</Text>
+                    </View>
+                   
+                    <View style = {Register_style.ImageContainer}>
+                    {
+                        this.state.localAvatarURLbase64 ?
+                        <Image source = {{uri:`data:image/png;base64,${this.state.localAvatarURLbase64}`}}
+                                style={Register_style.localAvatar}/>
+                        :
+                        <Icon name = 'image-inverted' size = {35}/>
+                    }
+                    </View>
+                    
+                 </View>
+                 <View style = {{marginLeft:27,marginRight:25}}>
+                      <Icon name = 'slideshare' size = {24}/>
+                      <Text style={{}}>性别</Text>
+                      <Picker
+                        selectedValue={this.state.sex}
+                        style={{  margin:0 ,padding:0 ,height:200}}
+                        onValueChange={(itemValue, itemIndex) => this.setState({sex: itemValue})}>
+                        <Picker.Item label="male" value="male" />
+                        <Picker.Item label="female" value="female" />
+                     </Picker>
+                  </View>
+                  
+                
                </View>
-               <View style = {Register_style.ImageContainer}>
-                   {
-                       this.state.localAvatarURLbase64 ?
-                       <Image source = {{uri:`data:image/png;base64,${this.state.localAvatarURLbase64}`}}
-                              style={Register_style.localAvatar}/>
-                       :
-                       null
-                   }
-               </View>
-               <View >
+               
+               <View style = {{padding:20}}>
                  <Button title = '注册' 
-                         type = 'outline'
+                     
+                          
                          onPress = {()=>this.register()}
                          
                  />

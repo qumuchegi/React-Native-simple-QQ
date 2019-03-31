@@ -10,6 +10,9 @@ import Icon from 'react-native-vector-icons/Entypo';
 import { Input, Divider, Button } from 'react-native-elements';
 import api from '../../axios/api';
 import {login_style} from './login_style'
+import { TextInput } from 'react-native-gesture-handler';
+ 
+
 
 class Login extends Component{
     constructor(props){
@@ -70,6 +73,7 @@ class Login extends Component{
         }
 
     }
+     
     render(){
         return(
             <View style = {login_style.loginBody}>
@@ -81,16 +85,18 @@ class Login extends Component{
                         onChangeText = {(text) => this.onChangeState('username',text)}
                         />
                  <Input placeholder = '密码' 
-                        type = 'password'
+                        password = {true}
                         leftIcon = {()=><Icon name='key' type = 'entype' size={24}></Icon>}
                         onChangeText = {(text) => this.onChangeState('password',text)}
                         />
+                  
                 <Button title = '登录' 
                         onPress = {() => this.login()}
                         style = {login_style.button}
                         />
                 <Button title = '注册' 
-                        style = {{marginTop:7}}
+                        type = 'outline'
+                        style = {{marginTop:10}}
                         onPress = {() => this.props.navigation.navigate('Register')}/>
             </View>
         )

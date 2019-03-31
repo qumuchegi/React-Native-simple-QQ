@@ -8,7 +8,8 @@ export const Register_style = StyleSheet.create({
     },
     localAvatar:{
         width:50,
-        height:48,
+        height:50,
+        borderRadius: 25,
         margin: 10,
         
     }

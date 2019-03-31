@@ -130,7 +130,7 @@ class ChatList extends Component{
                           
                       </View>}
             />
-             
+              
             
                 
         </View>
