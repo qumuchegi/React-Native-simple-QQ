@@ -9,12 +9,17 @@
  io.on('connection',function(socket){
      socket.on('sendChatMsg',data=>{
          const {from,to,content} = data
+
+         let msgNum = 0
+
          console.log({from,to,content})
          io.emit('recChatMsg',{from,to,content})
+         //io.emit('chatlistMsg',{})
          async.series([
             save_friendNotReadMsg=>{
                 users.findOne({username: to},(err,user)=>{
                     if(user){
+                       
                         new chatMsgs({
                             from,
                             to,
@@ -34,8 +39,11 @@
                                        from,
                                        chatID
                                })
-                               
+                              
                                user.save((err,user_newMsg)=>{
+
+                                   msgNum = user.messageNotRead.filter(e=>(e.type==='chat_msg'&&e.from===from)).length
+
                                    save_friendNotReadMsg(null)
                                   // console.log(user_newMsg.messageNotRead)
                                })
@@ -51,6 +59,8 @@
             saveChatList=>{
                 users.findOne({username:from},(err,I)=>{
                     if(I){
+                       
+                        io.emit('chatlistMsg',{name:from, lastMsg:content, avatar: I.avatarBase64,msgNum,to})
                         let new_I_chatlist = I.chatlist.filter(e=>e.name!==to)
                         new_I_chatlist.push({name:to,lastMsg:content})
                         I.chatlist = new_I_chatlist
@@ -78,7 +88,7 @@
          ],
             (err)=>{
                 if(!err)
-                console.log('消息实时发送给对方，存入对方未读消息，还有双方都把对方的名字存入自己的 chlist ')
+                console.log('消息实时发送给对方，存入对方未读消息，还有双方都把对方的名字存入自己的 chlist ',msgNum)
 
             })
 
@@ -90,7 +100,15 @@
 
 
      })
+     socket.on('rmChatlist_notReadMsg_state',data=>{
+        io.emit('rmChatlist_notReadMsg_state',data)
+   
+    })
 
- })
+    }
+ 
+  
+ 
+ )
 
  module.exports = serverChat

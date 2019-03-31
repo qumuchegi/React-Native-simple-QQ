@@ -6,6 +6,9 @@ var chatMsgs = model.getModel('chatMsgs')
 var twoFriendsChats = model.getModel('twoFriendsChats')
 var async = require('async')
 var uploadImg = require('../midlewere/multer_img_storage')
+//const serverChat = require('./routers/WS')
+//const io = require('socket.io')(serverChat);
+ 
 
 router.post('/register' , (req,res,next) => {
     let {username,password,sex,job,avatarBase64} = req.body;
@@ -377,15 +380,17 @@ router.get('/chathistory',(req,res,next)=>{
 router.get('/chatlist',(req,res,next)=>{
     let {myname} = req.query
     let _chatlist = []
-  
+    let msgNum
     users.findOne({username:myname}, (err,I) => {
         if(I){
             let n = I.chatlist.length
             console.log(I.chatlist)
+           
             I.chatlist.forEach(e => {
                 users.findOne({username:e.name}, (err,f) => {
                     if(f){
-                        _chatlist.push({name:e.name, lastMsg:e.lastMsg, avatar: f.avatarBase64})
+                        msgNum = I.messageNotRead.filter(e=>(e.type==='chat_msg'&&e.from===f.username)).length
+                        _chatlist.push({name:e.name, lastMsg:e.lastMsg, avatar: f.avatarBase64,msgNum})
                         n--
                         if(n===0){
                             res.json({code:0,data:_chatlist})
@@ -402,6 +407,21 @@ router.get('/chatlist',(req,res,next)=>{
         }
     })
 })
-
+router.post('/removemynotmsg',(req,res)=>{//删除我的未读消息
+    let {myname,friendname} = req.body
+   
+    users.findOne({username:myname}, (err,I)=>{
+        if(I){
+            I.messageNotRead = I.messageNotRead.filter(e=>!(e.type === 'chat_msg' && e.from === friendname))
+            I.save((err)=>{
+                if(!err){
+                    console.log('已经删除未读消息')
+                     
+                    res.json({code:0})
+                }
+            })
+        }
+    })
+})
 
 module.exports = router

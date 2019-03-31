@@ -31,9 +31,10 @@ class ChatO2O extends Component{
             merged_chats:[]
 
         }
-       // this.FlatListRef = React.createRef()
+        //this.flatlistRef = React.createRef()
     }
     async componentDidMount(){
+        console.log('121212121',this.flatlistRef)
         let friendName = this.props.navigation.getParam('friendName')
         let myAvatar = await AsyncStorage.getItem('avatarBase64')
         let myname = this.props.navigation.getParam('myname')//await AsyncStorage.getItem('username')
@@ -43,13 +44,13 @@ class ChatO2O extends Component{
 
         this.fetchHitory()
 
-        //this.FlatListRef.scrollToEnd();
+        //this.flatlistRef.scrollToEnd();
 
         socket.on('recChatMsg',data=>{
             let {from,to,content} = data
             console.log({from,to,content} )
 
-            if(myname===to){
+            if(myname===to ){
                 let historyChat = this.state.historyChat
                 historyChat = historyChat.concat([{ from, to, content }])
                 console.log( historyChat)
@@ -82,12 +83,22 @@ class ChatO2O extends Component{
             content:this.state.myMsgWillSend}])
         console.log( historyChat)
         this.setState({ historyChat })
+
+       // this.flatlistRef.scrollToEnd()
          
        
     }
     id2time(id) {
         let time = new Date(parseInt(id.toString().substring(0, 8), 16) * 1000);
         return time.toISOString().substr(0,10)
+    }
+    async componentWillUnmount(){// 推出时删除当前朋友对我的未读消息
+        let res = await api.post('/user/removemynotmsg',{myname:this.state.myname,friendname:this.state.friendName})
+        if(res.code === 0){
+            socket.emit('rmChatlist_notReadMsg_state',{friendname:this.state.friendName,myname:this.state.myname})// 删除 ChatList 页面被缓存的未读消息（实际上已读）
+            return true
+        }
+
     }
     render(){
         
@@ -106,7 +117,7 @@ class ChatO2O extends Component{
                 {
                     this.state.historyChat ?
                         <FlatList data = {this.state.historyChat}
-                                  ref = {(flatlist)=>this.FlatListRef=flatlist}
+                                  ref = {flatlistRef=>this.flatlistRef=flatlistRef}
                                   renderItem = {({item})=><View key = {uuid()}>
                                   {
                                       item.from === this.state.myname ?
